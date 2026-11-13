@@ -123,11 +123,11 @@ const CSS = `
 .dt-ticks i.flash{transform:scale(2.2)}
 .dt-cap{position:absolute;top:50%;left:0;width:24px;height:38px;margin:-19px 0 0 -12px;border-radius:9px;background:linear-gradient(180deg,var(--dt-cap),color-mix(in srgb,var(--dt-cap) 88%,#000));
   border:1px solid var(--dt-cap-edge);box-shadow:0 1px 2px rgba(0,0,0,.18),0 2px 6px rgba(0,0,0,.08);display:block;cursor:grab;outline:none;
-  transform:translate3d(var(--dt-x,0px),0,0);translate:0 var(--dt-y,0px);scale:var(--dt-s,1);transition:box-shadow .18s,scale .18s cubic-bezier(.3,1.5,.5,1),translate .08s;will-change:transform}
+  translate:var(--dt-x,0px) 0;transform:translateY(var(--dt-y,0px));scale:var(--dt-s,1);transition:box-shadow .18s,scale .18s cubic-bezier(.3,1.5,.5,1),transform .08s;will-change:translate,transform}
 .dt-cap::before{content:"";position:absolute;left:6px;right:6px;top:12px;height:12px;background:repeating-linear-gradient(180deg,var(--dt-ridge) 0 1.5px,transparent 1.5px 5px);border-radius:1px;opacity:.9}
 .dt[data-cap=dot] .dt-cap{width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%}
 .dt[data-cap=dot] .dt-cap::before{left:9px;right:9px;top:9px;height:6px;border-radius:50%;background:var(--dt-accent);opacity:1}
-.dt[data-settling] .dt-cap{transition:box-shadow .18s,scale .18s,translate .08s,transform .42s cubic-bezier(.25,1.6,.45,1)}
+.dt[data-settling] .dt-cap{transition:box-shadow .18s,scale .18s,transform .08s,translate .42s cubic-bezier(.25,1.6,.45,1)}
 .dt[data-settling] .dt-fill{transition:width .42s cubic-bezier(.25,1.6,.45,1)}
 .dt[data-pressed] .dt-cap{--dt-s:1.12;cursor:grabbing;box-shadow:0 6px 14px rgba(0,0,0,.18),0 14px 28px rgba(0,0,0,.14)}
 .dt-cap.dt-pop{--dt-y:-2px}
