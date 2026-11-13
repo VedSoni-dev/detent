@@ -80,7 +80,7 @@ function Workbench({ store, doc, update, shared, clearShared }: { store: Store; 
   const [device, setDevice] = useState("");
   const [tab, setTab] = useState<"react" | "html">("react");
   const [copied, setCopied] = useState("");
-  const [origin, setOrigin] = useState("https://detent.vercel.app");
+  const [origin, setOrigin] = useState("https://detent-beta.vercel.app");
   const previewRef = useRef<HTMLDivElement>(null);
   const tuneRef = useRef<HTMLDivElement>(null);
   const codeRef = useRef<HTMLDivElement>(null);

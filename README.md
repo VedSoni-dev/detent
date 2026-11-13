@@ -2,7 +2,7 @@
 
 A slider you can feel: it clicks at every whole number on your phone, then you copy the same slider into your own web app. A free, open-source remake of a haptic slider design by [Max Yan](https://x.com/MlXZY88/status/2120973389498098103).
 
-**Live:** https://detent.vercel.app · **App:** https://detent.vercel.app/app
+**Live:** https://detent-beta.vercel.app · **App:** https://detent-beta.vercel.app/app
 
 ## What works
 - A slider engine in one file (`lib/detent.js`, no dependencies, no network): Pointer Events with capture, tap anywhere on the track to jump, 0.1 steps with a detent (click) at every whole number, once each way, never doubled on a wiggle, one click for a fast fling.
@@ -23,7 +23,7 @@ A slider you can feel: it clicks at every whole number on your phone, then you c
 ## Use it in your own page
 
 ```html
-<script src="https://detent.vercel.app/detent.js" defer></script>
+<script src="https://detent-beta.vercel.app/detent.js" defer></script>
 <div data-detent data-label="How was it?" data-min="0" data-max="10" data-step="0.1" data-value="7"></div>
 <script>document.addEventListener("detent:change", (e) => console.log(e.detail.value));</script>
 ```

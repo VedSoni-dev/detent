@@ -86,23 +86,24 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="lp-points" aria-label="What it does">
+        <section className="lp-points" aria-labelledby="pts-h">
+          <h2 id="pts-h">What the slider does</h2>
           <div>
-            <h2>Clicks where it counts</h2>
+            <h3>Detents on whole numbers</h3>
             <p>It moves in tenths but clicks only on the whole numbers, once each way. A fast fling clicks once, not ten times.</p>
           </div>
           <div>
-            <h2>Feels like a real cap</h2>
+            <h3>A cap that lifts and stretches</h3>
             <p>The cap lifts when you grab it, stretches past the ends, and springs back when you let go. Tap anywhere on the track to jump there.</p>
           </div>
           <div>
-            <h2>Yours to keep</h2>
+            <h3>One file for your app</h3>
             <p>Change the words, range, clicks, colour and cap, or describe it in a sentence. Copy React or HTML. One file, no dependencies, MIT.</p>
           </div>
         </section>
 
         <section className="lp-devices" aria-labelledby="dev-h">
-          <h2 id="dev-h">What each device does, honestly</h2>
+          <h2 id="dev-h">Haptics on each device</h2>
           <dl>
             <div><dt>Android phones</dt><dd>Vibrates at every whole number, plus a short buzz when you grab the cap.</dd></div>
             <div><dt>iPhone</dt><dd>Safari has no vibration API. It may tick when you tap the cap; while you drag, each number pops on screen, with an optional click sound.</dd></div>
@@ -116,6 +117,9 @@ export default function Landing() {
             <h2 id="free-h">Free, because of publik</h2>
             <PublikPitch appName="detent" className="lp-pitch" />
             <Pending />
+            <div className="row lp-close">
+              <a className="btn primary big" href="/app">Make your slider →</a>
+            </div>
           </div>
           <Film />
         </section>

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://detent.vercel.app"),
+  metadataBase: new URL("https://detent-beta.vercel.app"),
   title: "detent: a slider you can feel",
   description:
     "A slider that clicks at every whole number: it vibrates on Android, pops on screen everywhere, and stretches past the ends. Tune it, then copy it into your own web app. Free and open source.",
