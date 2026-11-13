@@ -7,7 +7,7 @@ import { htmlSnippet, reactSnippet } from "@/lib/exportCode";
 import { PRESETS, decode, empty, encode, load, newId, save, type Saved, type Store } from "@/lib/store";
 import Mark from "@/components/Mark";
 
-const SWATCHES = ["#e8590c", "#1f8a5b", "#2f6fdf", "#c2255c", "#7c5cdb", "#1b1a17"];
+const SWATCHES = ["#e8590c", "#1f8a5b", "#2f6fdf", "#c2255c", "#0e7490", "#1b1a17"];
 
 export default function Playground() {
   const [store, setStore] = useState<Store | null>(null);
@@ -24,6 +24,7 @@ export default function Playground() {
         if (dupe) s = { ...s, current: dupe.id };
         else { const id = newId(); s = { ...s, sliders: [{ id, name: d.name, o: d.o, updated: Date.now() }, ...s.sliders], current: id }; }
         setShared(d.name);
+        save(s); // saved now, so the slider is still there if this effect runs again (React dev remount) or the tab reloads
       }
       history.replaceState(null, "", location.pathname);
     }
@@ -32,7 +33,7 @@ export default function Playground() {
 
   const update = useCallback((fn: (s: Store) => Store) => setStore((prev) => { const n = fn(prev ?? empty()); save(n); return n; }), []);
 
-  if (!store) return <div className="ws-loading" aria-busy="true" />;
+  if (!store) return <div className="ws-loading" aria-busy="true"><span>Loading your sliders</span></div>;
   const current = store.sliders.find((s) => s.id === store.current) ?? null;
   if (!current) return <Onboarding onCreate={(name, o) => update((s) => { const id = newId(); return { ...s, sliders: [{ id, name, o, updated: Date.now() }, ...s.sliders], current: id }; })} />;
   return <Workbench key={current.id} store={store} doc={current} update={update} shared={shared} clearShared={() => setShared(null)} />;
@@ -48,10 +49,11 @@ function Onboarding({ onCreate }: { onCreate: (name: string, o: DetentOptions) =
   return (
     <div className="ws">
       <TopBar />
-      <main className="onb">
-        <p className="eyebrow">First slider</p>
-        <h1>What will your slider set?</h1>
-        <p className="lede">Pick a kind, name it, and you get a slider that clicks at every step. You can change everything after.</p>
+      <main className="wrap onb">
+        <div className="onb-copy">
+        <p className="eyebrow">Your first slider</p>
+        <h1>Pick what your slider sets</h1>
+        <p className="lede">Choose a kind and write the words above it. The slider clicks at every step, and you can change everything after.</p>
         <div className="chips" role="group" aria-label="Kind of slider">
           {(Object.keys(PRESETS) as (keyof typeof PRESETS)[]).map((k) => (
             <button key={k} type="button" className="chip" aria-pressed={preset === k} onClick={() => setPreset(k)}>
@@ -64,9 +66,16 @@ function Onboarding({ onCreate }: { onCreate: (name: string, o: DetentOptions) =
           <input value={label} maxLength={60} placeholder={String(base.o.label)} onChange={(e) => setLabel(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") create(); }} />
         </label>
-        <div className="stage small"><Detent {...o} /></div>
-        <button type="button" className="btn primary" onClick={create}>Make my slider</button>
+        <button type="button" className="btn primary big" onClick={create}>Make my slider</button>
         <p className="muted small-print">Saved in this browser only. Nothing is uploaded.</p>
+        </div>
+        <div className="ground">
+          <div className="stage">
+            <div className="stage-bar"><span className="dots" aria-hidden="true"><i /><i /><i /></span><span>Preview · {base.name}</span></div>
+            <div className="stage-body"><Detent {...o} /></div>
+          </div>
+          <p className="device">Drag the cap. It clicks at every {o.detentEvery === 1 ? "whole number" : `${o.detentEvery}${o.suffix}`}.</p>
+        </div>
       </main>
     </div>
   );
@@ -109,7 +118,7 @@ function Workbench({ store, doc, update, shared, clearShared }: { store: Store; 
         <select id="pick" className="pick" value={doc.id} onChange={(e) => update((s) => ({ ...s, current: e.target.value }))}>
           {store.sliders.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
-        <button type="button" className="btn ghost" onClick={() => update((s) => ({ ...s, current: null }))}>New</button>
+        <button type="button" className="btn" onClick={() => update((s) => ({ ...s, current: null }))}>New<span className="hide-sm"> slider</span></button>
         <DataMenu store={store} update={update} />
       </TopBar>
 
@@ -124,21 +133,24 @@ function Workbench({ store, doc, update, shared, clearShared }: { store: Store; 
             <li><button type="button" className="link" onClick={() => tuneRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}><b>2. Make it yours.</b></button> Change the words, range, colour and cap, or describe it in a sentence.</li>
             <li><button type="button" className="link" onClick={() => codeRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}><b>3. Take it.</b></button> Copy the React or HTML and drop it into your app.</li>
           </ol>
-          <button type="button" className="btn ghost" onClick={() => update((s) => ({ ...s, howtoDone: true }))}>Got it</button>
+          <button type="button" className="btn" onClick={() => update((s) => ({ ...s, howtoDone: true }))}>Got it</button>
         </section>
       )}
 
       <main className="bench">
-        <section className="preview" ref={previewRef} aria-label="Preview">
+        <section className="preview ground" ref={previewRef} aria-label="Preview">
           <div className="stage">
-            <Detent {...o} onChange={setLive} onDetent={() => setTicks((t) => t + 1)} onCommit={(v) => patch({ value: v })} />
+            <div className="stage-bar"><span className="dots" aria-hidden="true"><i /><i /><i /></span><span>{doc.name}</span></div>
+            <div className="stage-body">
+              <Detent {...o} onChange={setLive} onDetent={() => setTicks((t) => t + 1)} onCommit={(v) => patch({ value: v })} />
+            </div>
           </div>
           <p className="device" data-testid="device">{device}</p>
-          <p className="muted mono tickcount" aria-live="off">{ticks} {ticks === 1 ? "click" : "clicks"} this session</p>
+          <p className="tickcount" aria-live="off">{ticks} {ticks === 1 ? "click" : "clicks"} this session</p>
           <PhoneQr url={shareUrl} onCopy={() => copy("link", shareUrl)} copied={copied === "link"} />
         </section>
 
-        <section className="tune" ref={tuneRef} aria-label="Settings">
+        <section className="panel tune" ref={tuneRef} aria-label="Settings">
           <h2>Make it yours</h2>
           <div className="grid2">
             <label className="field"><span>Name (only you see it)</span><input value={doc.name} maxLength={60} onChange={(e) => patch({ name: e.target.value })} /></label>
@@ -170,7 +182,7 @@ function Workbench({ store, doc, update, shared, clearShared }: { store: Store; 
           <Describe onResult={(name, n) => patch({ ...n, name })} />
         </section>
 
-        <section className="code" ref={codeRef} aria-label="Code">
+        <section className="panel code" ref={codeRef} aria-label="Code">
           <div className="code-head">
             <h2>Put it in your app</h2>
             <div className="tabs" role="tablist">
@@ -225,7 +237,7 @@ function PhoneQr({ url, onCopy, copied }: { url: string; onCopy: () => void; cop
       {desk && svg && <div className="qr-img" role="img" aria-label="QR code for this slider" dangerouslySetInnerHTML={{ __html: svg }} />}
       <div>
         {desk && <p><b>Feel it on your phone.</b> Scan with the camera: it opens this exact slider.</p>}
-        <button type="button" className="btn ghost" onClick={onCopy}>{copied ? "Link copied" : "Copy link to this slider"}</button>
+        <button type="button" className="btn" onClick={onCopy}>{copied ? "Link copied" : "Copy link to this slider"}</button>
       </div>
     </div>
   );
@@ -298,7 +310,7 @@ function DataMenu({ store, update }: { store: Store; update: (fn: (s: Store) => 
   };
   return (
     <details className="menu">
-      <summary className="btn ghost">More</summary>
+      <summary className="btn">Manage</summary>
       <div className="menu-list">
         <button type="button" onClick={exportJson}>Export my sliders (JSON)</button>
         <button type="button" onClick={() => file.current?.click()}>Import sliders…</button>
@@ -311,10 +323,12 @@ function DataMenu({ store, update }: { store: Store; update: (fn: (s: Store) => 
 
 function TopBar({ children }: { children?: React.ReactNode }) {
   return (
-    <header className="top">
-      <a href="/" className="brand"><Mark /> detent</a>
-      <div className="top-r">{children}</div>
-    </header>
+    <div className="top-wrap">
+      <header className="top">
+        <a href="/" className="brand"><Mark /> detent</a>
+        <div className="top-r">{children}</div>
+      </header>
+    </div>
   );
 }
 

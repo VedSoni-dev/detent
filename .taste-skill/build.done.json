@@ -1,0 +1,11 @@
+{
+ "page": null,
+ "url": "http://localhost:3157/",
+ "root": null,
+ "kind": "software",
+ "category": "haptic slider component for web apps",
+ "primary": "Make your slider",
+ "rounds": 3,
+ "start": "2026-11-13T00:34:28.151Z",
+ "by": "gate.mjs --start"
+}

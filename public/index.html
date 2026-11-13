@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en" data-type="software" data-radius="soft" data-ground="sand" data-buttons="pill" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>detent: a haptic slider for web apps</title>
+<meta name="description" content="An open-source slider that vibrates at every whole number on Android and pops on screen everywhere. Tune it, then copy one 19 KB file into React or plain HTML.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="detent: a haptic slider for web apps">
+<meta property="og:description" content="A slider that clicks at every whole number. Tune it, then copy one file into your app.">
+<meta property="og:image" content="https://detent-beta.vercel.app/share.jpg">
+<meta property="og:url" content="https://detent-beta.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://detent-beta.vercel.app/share.jpg">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#ffffff">
+<!-- <link rel="canonical" href="https://detent-beta.vercel.app/"> stays a comment until detent has its own domain -->
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/system.css">
+<link rel="stylesheet" href="assets/ui/cards.css">
+<link rel="stylesheet" href="assets/motion/motion.css">
+<link rel="stylesheet" href="assets/backgrounds/backgrounds.css">
+<link rel="stylesheet" href="assets/layout/layout.css">
+<link rel="stylesheet" href="assets/icons/icon.css">
+<style>
+:root {
+  --p-bg: #ffffff; --p-surface: #f5f4f1; --p-ink: #141413; --p-muted: #6b6b6a;
+  --p-accent: #c2410c; --p-accent-ink: #ffffff; --p-action: #c2410c; --p-action-ink: #ffffff;
+  --p-inv-bg: #141413; --p-inv-surface: #212120; --p-inv-ink: #ffffff; --p-inv-muted: #9c9c9b;
+  --p-inv-accent: #c2410c; --p-inv-accent-ink: #ffffff; --p-inv-action: #c2410c; --p-inv-action-ink: #ffffff;
+  --font-display: "Instrument Sans", system-ui, sans-serif;
+  --font-text: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --display-weight: 500;
+  --display-tracking: -0.028em;
+  --display-tracking-xl: -0.036em;
+  --display-stretch: 96%;
+  --ly-scale: 1.04;
+}
+</style>
+<link rel="stylesheet" href="assets/ui/base.css">
+<link rel="stylesheet" href="assets/diagrams/diagram.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script src="assets/backgrounds/backgrounds.js"></script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js"><link rel="modulepreload" href="assets/moments/lib.js"><link rel="modulepreload" href="assets/moments/marquee-row/moment.js">
+<!-- page CSS: only what sits inside a visual (the detent window, the app frame, the code cards, the film frame) -->
+<style>
+  /* the brand mark: detent's own drawing (a rail with one notch and a ridged cap) */
+  .dmark { width: 24px; height: 24px; flex: none; }
+  /* the slider window: the product's own chrome, one radius, a 1px line */
+  .dw { background: #fff; color: #141413; border: 1px solid rgb(20 20 19 / .1); border-radius: 14px; overflow: hidden; box-shadow: 0 30px 60px -32px rgb(20 20 19 / .35); font: 400 15px/1.45 var(--font-text); }
+  .dw__bar { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 16px; border-bottom: 1px solid rgb(20 20 19 / .08); font-size: 13px; color: #5f5f5d; }
+  .dw__dots { display: flex; gap: 6px; } .dw__dots i { width: 10px; height: 10px; border-radius: 50%; background: #e2e1dd; }
+  .dw__body { padding: 40px var(--ly-cut-room, 48px) 32px 32px; display: grid; gap: 20px; }
+  .dw .dt-head { font-size: 20px; }
+  .dw__device { font-size: 14px; color: #3d3d3b; min-height: 42px; }
+  .dw__row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; color: #5f5f5d; }
+  .dw__row b { font-weight: 500; color: #141413; min-width: 52px; }
+  .sw { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgb(20 20 19 / .14); cursor: pointer; padding: 0; }
+  .sw[aria-pressed="true"] { box-shadow: 0 0 0 2px #141413; }
+  .seg2 { display: inline-flex; border: 1px solid rgb(20 20 19 / .12); border-radius: 999px; padding: 3px; }
+  .seg2 button { height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #5f5f5d; font: 500 13px var(--font-text); cursor: pointer; }
+  .seg2 button[aria-pressed="true"] { background: #f1f0ec; color: #141413; }
+  .dw__count { font: 400 13px var(--font-mono); color: #5f5f5d; }
+  /* the QR card over the window's lower-left (desktop only: layout.css hides it on a phone) */
+  .qr-card { left: var(--s-6); bottom: var(--s-6); width: 300px; display: flex; gap: 14px; align-items: center; background: #fff; color: #141413; border-radius: 12px; padding: 14px; box-shadow: 0 18px 40px -18px rgb(20 20 19 / .35); font-size: 14px; line-height: 1.4; }
+  .qr-card img { width: 84px; height: 84px; flex: none; image-rendering: pixelated; }
+  .qr-card b { font-weight: 500; display: block; margin-bottom: 2px; }
+  .qr-card span { color: #3d3d3b; }
+  @media (hover: none) { .qr-card { display: none; } }
+
+  /* #settings: the app frame (sections-library app-frame recipe) */
+  .app.ui { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); margin-top: var(--s-7); background: var(--u-bg); border: 1px solid var(--u-border); border-radius: var(--u-r); box-shadow: var(--u-shadow); }
+  .app > .app__pane { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+  .app > .app__pane + .app__pane { border-left: 1px solid var(--u-line); }
+  .app__head { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 20px; border-bottom: 1px solid var(--u-line); font: 500 14px var(--font-text); }
+  .app__head span { color: var(--u-muted, #6b6b6a); font-weight: 400; font-size: 13px; }
+  .kinds { list-style: none; margin: 0; padding: 8px; display: grid; gap: 2px; }
+  .kinds button { width: 100%; display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left; padding: 11px 12px; border: 0; border-radius: 8px; background: transparent; color: inherit; font: 400 15px var(--font-text); cursor: pointer; }
+  .kinds button:hover { background: rgb(20 20 19 / .04); }
+  .kinds button[aria-pressed="true"] { background: rgb(20 20 19 / .06); }
+  .kinds i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+  .kinds small { font: 400 13px var(--font-mono); color: #6b6b6a; }
+  .open { padding: 32px 40px; display: grid; gap: 24px; align-content: start; }
+  .open .dt-head { font-size: 20px; }
+  .open__fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .open__fields div { border: 1px solid var(--u-line); border-radius: 8px; padding: 8px 12px; }
+  .open__fields dt { font-size: 13px; color: #6b6b6a; } .open__fields dd { margin: 0; font: 400 15px var(--font-mono); }
+  @media (min-width: 1024px) and (max-width: 1279px) { .app.ui { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); } }
+  @media (max-width: 1023px) {
+    .app.ui { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+    .app > .app__pane--list { max-height: 252px; }
+    .app > .app__pane + .app__pane { border-left: 0; border-top: 1px solid var(--u-line); }
+  }
+  @media (max-width: 639px) {
+    .hero__art > .dw { width: calc(100% - 2 * var(--s-4)); }
+    .dw__body { padding: 28px 20px 24px; }
+    .sw { width: 44px; height: 44px; }
+    .seg2 button { height: 44px; }
+    .kinds button { min-height: 44px; }
+    .app > .app__pane--list { max-height: none; }
+    .kinds { grid-template-columns: 1fr 1fr; }
+    .kinds li:nth-child(n+5) { display: none; }
+    .kinds small { display: none; }
+    .open { padding: 24px 20px; }
+    .open__fields { grid-template-columns: 1fr 1fr; }
+    .app__head span { display: none; }
+  }
+
+  /* #code: two code cards */
+  .code-card { padding: 0; gap: 0; display: flex; flex-direction: column; min-width: 0; background: var(--u-bg, #fff); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+  .code-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px 12px 20px; border-bottom: 1px solid var(--line); }
+  .code-card__head h3 { font: 500 var(--t-card, 18px)/1.3 var(--font-text); margin: 0; }
+  .code-card pre { margin: 0; padding: 20px; font: 400 13px/1.6 var(--font-mono); color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; flex: 1; }
+  .code-card pre .c { color: var(--muted); }
+  #code [data-moment] { margin-top: var(--s-8); }
+  /* a phone shows the React card only (the HTML snippet is one tap away in /app) */
+  @media (max-width: 639px) { .code-card pre { font-size: 12px; padding: 16px; } .code-card--html { display: none; } #code [data-moment] { margin-top: var(--s-6); } }
+
+  /* #price: the launch film frame (client slot) */
+  .film { --ratio: 56.25%; background: #141413; }
+  .film video { object-fit: cover; }
+  @media (max-width: 639px) { #price .film { min-height: 150px; } }
+  /* under 380px the publik words and the film need two phone screens */
+  @media (max-width: 379px) { #price { --hm: 2; } }
+</style>
+</head>
+<body>
+<!-- type: software
+     deal: hero collage, nav nav-centre (re-dealt from nav-cards: no photographs), close close-type, footer footer-statement, rhythm surface-pairs, buttons pill, mark the client's own, grounds none (lit hero frame sand)
+     moments: marquee-row, the last row of #code -->
+<header class="nav nav--centre">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Skip to content</a>
+    <a class="nav__logo" href="#top"><svg class="dmark" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="11" width="20" height="2.4" rx="1.2" fill="currentColor" opacity=".25"/><rect x="2" y="11" width="10" height="2.4" rx="1.2" fill="#e8590c"/><rect x="8.5" y="4" width="7" height="16" rx="3" fill="#fff" stroke="currentColor" stroke-width="1.6"/><path d="M10.6 10h2.8M10.6 12.2h2.8M10.6 14.4h2.8" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>detent</a>
+    <nav class="nav__links" aria-label="Main">
+      <div class="nav__item"><a class="nav__link" href="#settings">Settings</a></div>
+      <div class="nav__item"><a class="nav__link" href="#devices">Devices</a></div>
+      <div class="nav__item"><a class="nav__link" href="#code">Code</a></div>
+      <div class="nav__item"><a class="nav__link" href="#price">Price</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="nav__link" href="https://github.com/VedSoni-dev/detent">GitHub</a>
+      <a class="btn btn--primary" href="/app">Make your slider</a>
+    </div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero hero--collage" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text grid hero__grid">
+      <div class="hero__text span-5">
+        <h1 id="hero-h">Haptic slider for your web app</h1>
+        <p class="hero__lead">detent clicks at every whole number: a buzz under your thumb on Android, a pop on screen everywhere. Tune it here, then copy one 19 KB file into your app.</p>
+        <div class="btn-row"><a class="btn btn--primary" href="/app">Make your slider<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a><a class="btn btn--secondary" href="/detent.js" download>Download detent.js</a></div>
+        <p class="t-small muted hero-proof">MIT licensed. After a slider design by Max Yan.</p>
+      </div>
+      <div class="hero__art span-6 start-7">
+        <div class="ly-piece ly-piece--main dw ui ui-detent" role="group" aria-label="A live detent slider">
+          <div class="dw__bar"><span class="dw__dots" aria-hidden="true"><i></i><i></i><i></i></span><span>detent · Rating</span></div>
+          <div class="dw__body">
+            <div id="hero-slider"></div>
+            <p class="dw__device" id="hero-device">Drag the cap. Every whole number clicks.</p>
+            <div class="dw__row"><b>Colour</b>
+              <button class="sw" type="button" style="background:#e8590c" aria-label="Orange" aria-pressed="true" data-accent="#e8590c"></button>
+              <button class="sw" type="button" style="background:#1f8a5b" aria-label="Green" aria-pressed="false" data-accent="#1f8a5b"></button>
+              <button class="sw" type="button" style="background:#2f6fdf" aria-label="Blue" aria-pressed="false" data-accent="#2f6fdf"></button>
+              <button class="sw" type="button" style="background:#141413" aria-label="Black" aria-pressed="false" data-accent="#141413"></button>
+            </div>
+            <div class="dw__row"><b>Cap</b><span class="seg2" role="group" aria-label="Cap"><button type="button" aria-pressed="true" data-cap="ridge">Ridged</button><button type="button" aria-pressed="false" data-cap="dot">Dot</button></span></div>
+            <p class="dw__count" id="hero-count" aria-live="off">7.0 · 0 clicks</p>
+          </div>
+        </div>
+        <div class="ly-piece qr-card">
+          <img src="/qr-home.svg" alt="QR code that opens detent on your phone" width="84" height="84">
+          <p><b>On a computer?</b><span>Scan it and drag the cap on your phone. That is where it clicks.</span></p>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="settings" aria-labelledby="settings-h">
+    <div class="wrap">
+      <div class="grid">
+        <div class="section-head span-5"><h2 id="settings-h">Settings for every kind of slider</h2></div>
+        <p class="span-6 start-7">Pick a kind, write the words above it, set the range, the smallest move and how often it clicks. The slider changes as you type. <a class="link" href="/app">Open the settings</a></p>
+      </div>
+      <div class="ui ui-app app fill" aria-label="detent's settings: a list of slider kinds beside the open slider">
+        <div class="app__pane app__pane--list">
+          <div class="app__head">Your sliders<span>8 kinds</span></div>
+          <ul class="kinds" id="kinds">
+            <li><button type="button" aria-pressed="true" data-kind="rating" style="--c:#e8590c"><i></i>Rating<small>0–10</small></button></li>
+            <li><button type="button" aria-pressed="false" data-kind="volume" style="--c:#2f6fdf"><i></i>Volume<small>0–100%</small></button></li>
+            <li><button type="button" aria-pressed="false" data-kind="stars" style="--c:#c2255c"><i></i>Stars<small>1–5</small></button></li>
+            <li><button type="button" aria-pressed="false" data-kind="heat" style="--c:#1f8a5b"><i></i>Temperature<small>16–30°</small></button></li>
+            <li><button type="button" aria-pressed="false" data-kind="tip" style="--c:#141413"><i></i>Tip at checkout<small>0–30%</small></button></li>
+            <li><button type="button" aria-pressed="false" data-kind="spice" style="--c:#b42318"><i></i>Spice level<small>0–5</small></button></li>
+            <li><button type="button" aria-pressed="false" data-kind="speed" style="--c:#0e7490"><i></i>Playback speed<small>0.5–2x</small></button></li>
+            <li><button type="button" aria-pressed="false" data-kind="mood" style="--c:#a16207"><i></i>Mood today<small>1–7</small></button></li>
+          </ul>
+        </div>
+        <div class="app__pane app__pane--open">
+          <div class="app__head">Preview<span>drag it, or use the arrow keys</span></div>
+          <div class="open">
+            <div id="kind-slider"></div>
+            <dl class="open__fields" id="kind-fields">
+              <div><dt>From</dt><dd data-f="min">0</dd></div>
+              <div><dt>To</dt><dd data-f="max">10</dd></div>
+              <div><dt>Smallest move</dt><dd data-f="step">0.1</dd></div>
+              <div><dt>Clicks every</dt><dd data-f="detentEvery">1</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="devices" aria-labelledby="devices-h">
+    <div class="wrap">
+      <div class="grid fill">
+        <div class="span-5 split-col">
+          <div class="section-head"><h2 id="devices-h">What the slider does on each device</h2></div>
+          <p class="t-lead">Android phones vibrate at every number and buzz once when you grab the cap. Safari on iPhone has no vibration API, so a tap on the cap may tick and each number pops on screen. Computers get the pop and an optional click.</p>
+          <p class="split-col__end"><span class="muted">On this device:</span> <span id="devices-line">every number pops on screen.</span></p>
+        </div>
+        <div class="frame frame--split frame--fill frame--lit span-6 start-7">
+          <div class="dg" data-diagram data-dg-still><script type="application/json">{"layout":"lanes","alt":"Each whole number the cap crosses goes through detent.js to a vibration on Android, a tap tick on iPhone and a pop with an optional click on a computer.","curve":"curve","input":{"label":"Cap at 7","icon":"ui:hand-grab","meta":"6.9 → 7.0"},"core":{"label":"detent.js","icon":"ui:cpu"},"lanes":[{"label":"Android","icon":"logos:android-icon","meta":"vibrate 8 ms"},{"label":"iPhone","icon":"logos:apple","meta":"tick on tap"},{"label":"Computer","icon":"ui:monitor","meta":"pop + click"}]}</script></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="code" aria-labelledby="code-h">
+    <div class="wrap">
+      <div class="grid">
+        <div class="section-head span-5"><h2 id="code-h">One slider file for your app</h2></div>
+        <p class="span-6 start-7">Save detent.js next to your component and paste the React, or add one script tag to any page. MIT licensed. <a class="link" href="https://github.com/VedSoni-dev/detent">Read the source</a></p>
+      </div>
+      <div class="grid" style="margin-top: var(--s-7)">
+        <article class="card code-card span-6">
+          <div class="code-card__head"><h3>React slider</h3><button class="btn btn--secondary" type="button" data-copy="react">Copy React</button></div>
+          <pre id="snip-react"></pre>
+        </article>
+        <article class="card code-card code-card--html span-6">
+          <div class="code-card__head"><h3>HTML slider</h3><button class="btn btn--secondary" type="button" data-copy="html">Copy HTML</button></div>
+          <pre id="snip-html"></pre>
+        </article>
+      </div>
+      <div data-moment="marquee-row" data-moment-opts='{"speed": 36}'>
+        <ul class="mo-mq__track"><li>Rating</li><li>Volume</li><li>Tip at checkout</li><li>Spice level</li><li>Playback speed</li><li>Brightness</li><li>Temperature</li><li>Font size</li><li>Mood today</li><li>Zoom</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section ground-surface" id="price" aria-labelledby="price-h">
+    <div class="wrap">
+      <div class="grid fill">
+        <div class="span-5 split-col">
+          <div class="section-head"><h2 id="price-h">A free slider, paid for by publik</h2></div>
+          <p class="t-lead">detent is free on <a class="link" href="https://publikhq.com">publik</a>, a free software marketplace. When you use it through publik, its builder earns a small share of the usage, which keeps detent free. publik’s mission: free software for everyone.</p>
+          <p id="pending" hidden>Until detent’s publik listing is up, the app is open to everyone with no sign-in.</p>
+          <p class="split-col__end"><a class="link" href="https://publikhq.com">Make a free publik account</a></p>
+        </div>
+        <!-- CLIENT FILE film: public/detent.mp4 (1920x1080 or 1080x1080, H.264, the launch film); poster: film-poster.jpg, the hero window. The script below adds the source and controls only once the file is there. -->
+        <figure class="frame frame--photo frame--fill film span-6 start-7" style="margin:0">
+          <video class="frame__img" id="film" playsinline preload="none" poster="/film-poster.jpg" aria-label="The detent launch film"></video>
+        </figure>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing footer--statement" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--type">
+      <div class="section-head">
+        <h2 id="close-h">Make a slider that clicks</h2>
+        <p>Free and MIT licensed. Works in React or plain HTML.</p>
+      </div>
+      <a class="btn btn--primary btn--xl btn--wide" href="/app">Make your slider<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <a class="nav__logo" href="#top"><svg class="dmark" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="11" width="20" height="2.4" rx="1.2" fill="currentColor" opacity=".25"/><rect x="2" y="11" width="10" height="2.4" rx="1.2" fill="#e8590c"/><rect x="8.5" y="4" width="7" height="16" rx="3" fill="#fff" stroke="currentColor" stroke-width="1.6"/><path d="M10.6 10h2.8M10.6 12.2h2.8M10.6 14.4h2.8" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>detent</a>
+          <p class="footer__lede">An open-source slider that clicks at every whole number.</p>
+        </div>
+        <div class="span-2 footer__col"><h3>Slider</h3><ul><li><a href="#settings">Settings</a></li><li><a href="#devices">Devices</a></li><li><a href="#code">Code</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Source</h3><ul><li><a href="https://github.com/VedSoni-dev/detent">GitHub</a></li><li><a href="https://github.com/VedSoni-dev/detent/blob/main/LICENSE">MIT licence</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Credit</h3><ul><li><a href="https://x.com/MlXZY88/status/2120973389498098103">Max Yan’s design</a></li><li><a href="https://x.com/forkthis_ai">@forkthis_ai</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>publik</h3><ul><li><a href="#price">Price</a></li><li><a href="https://publikhq.com">publikhq.com</a></li></ul></div>
+      </div>
+      <div class="footer__legal">
+        <span>&copy; 2026 detent contributors. After a slider design by Max Yan; not affiliated with him.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/detent.js"></script>
+<script>
+(function () {
+  var D = window.Detent; if (!D) return;
+  function light(host) { var r = host.firstElementChild; if (r) r.dataset.theme = "light"; }
+  // hero: the live slider
+  var clicks = 0, hostH = document.getElementById("hero-slider"), count = document.getElementById("hero-count");
+  var hero = D.mount(hostH, { label: "How was it?", min: 0, max: 10, step: 0.1, value: 7,
+    onChange: function (v) { count.textContent = v.toFixed(1) + " · " + clicks + (clicks === 1 ? " click" : " clicks"); },
+    onDetent: function () { clicks++; count.textContent = hero.value.toFixed(1) + " · " + clicks + (clicks === 1 ? " click" : " clicks"); } });
+  light(hostH);
+  var line = D.describeDevice({ haptics: true, sound: false });
+  document.getElementById("hero-device").textContent = line;
+  var dl = document.getElementById("devices-line"); if (dl) dl.textContent = line.replace(/^No vibration here: /, "").replace(/^./, function (c) { return c.toLowerCase(); });
+  document.querySelectorAll(".sw").forEach(function (b) { b.addEventListener("click", function () {
+    document.querySelectorAll(".sw").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    hero.set({ accent: b.dataset.accent });
+  }); });
+  document.querySelectorAll("[data-cap]").forEach(function (b) { b.addEventListener("click", function () {
+    document.querySelectorAll("[data-cap]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    hero.set({ cap: b.dataset.cap });
+  }); });
+
+  // #settings: the kinds list drives the open slider
+  var K = {
+    rating: { label: "How was it?", min: 0, max: 10, step: 0.1, detentEvery: 1, value: 7, accent: "#e8590c" },
+    volume: { label: "Volume", min: 0, max: 100, step: 1, detentEvery: 10, value: 60, suffix: "%", accent: "#2f6fdf" },
+    stars: { label: "Stars", min: 1, max: 5, step: 1, detentEvery: 1, value: 4, accent: "#c2255c", cap: "dot" },
+    heat: { label: "Heat", min: 16, max: 30, step: 0.5, detentEvery: 1, value: 21, suffix: "°", accent: "#1f8a5b" },
+    tip: { label: "Tip", min: 0, max: 30, step: 1, detentEvery: 5, value: 15, suffix: "%", accent: "#141413" },
+    spice: { label: "How hot?", min: 0, max: 5, step: 0.1, detentEvery: 1, value: 2, accent: "#b42318", cap: "dot" },
+    speed: { label: "Playback speed", min: 0.5, max: 2, step: 0.05, detentEvery: 0.25, value: 1, suffix: "x", accent: "#0e7490" },
+    mood: { label: "How do you feel today?", min: 1, max: 7, step: 0.1, detentEvery: 1, value: 4, accent: "#a16207" }
+  };
+  var hostK = document.getElementById("kind-slider");
+  var base = { suffix: "", cap: "ridge" };
+  var kind = D.mount(hostK, Object.assign({}, base, K.rating)); light(hostK);
+  document.querySelectorAll("[data-kind]").forEach(function (b) { b.addEventListener("click", function () {
+    document.querySelectorAll("[data-kind]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    var o = Object.assign({}, base, K[b.dataset.kind]); kind.set(o);
+    document.querySelectorAll("#kind-fields [data-f]").forEach(function (d) { d.textContent = String(o[d.dataset.f]) + (d.dataset.f === "min" || d.dataset.f === "max" ? (o.suffix || "") : ""); });
+  }); });
+
+  // #code: the snippets for the default slider
+  var origin = location.origin;
+  var react = '"use client"; // detent.js saved next to this file\nimport { useEffect, useRef } from "react";\nimport "./detent.js";\n\nexport function Detent(props) {\n  const host = useRef(null);\n  useEffect(() => {\n    const s = globalThis.Detent.mount(host.current, props);\n    return () => s.destroy();\n  }, []);\n  return <div ref={host} />;\n}\n\n<Detent label="How was it?" min={0} max={10} value={7} />';
+  var html = '<!-- 1. once per page -->\n<script src="' + origin + '/detent.js" defer></' + 'script>\n\n<!-- 2. the slider, anywhere -->\n<div data-detent data-label="How was it?"\n  data-min="0" data-max="10" data-value="7"></div>\n\n<script>\n  document.addEventListener("detent:change",\n    (e) => console.log(e.detail.value));\n</' + 'script>';
+  document.getElementById("snip-react").textContent = react;
+  document.getElementById("snip-html").textContent = html;
+  document.querySelectorAll("[data-copy]").forEach(function (b) { var label = b.textContent; b.addEventListener("click", function () {
+    var t = b.dataset.copy === "react" ? react : html;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Press Ctrl+C"; })
+      .then(function () { setTimeout(function () { b.textContent = label; }, 1600); });
+  }); });
+
+  // #price: the publik pending line, and the film once its file is there
+  fetch("/api/publik/status", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { if (j && j.state === "pending") document.getElementById("pending").hidden = false; }).catch(function () {});
+  fetch("/detent.mp4", { method: "HEAD" }).then(function (r) {
+    if (r.ok && (r.headers.get("content-type") || "").indexOf("video") === 0) { var v = document.getElementById("film"); v.src = "/detent.mp4"; v.controls = true; v.preload = "metadata"; }
+  }).catch(function () {});
+})();
+</script>
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
+<script type="module" src="assets/diagrams/mount.js"></script>
+</body>
+</html>

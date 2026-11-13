@@ -1,0 +1,27 @@
+[
+ {
+  "check": "scroll-reveal",
+  "target": "div.dg",
+  "reason": "the kit diagram's pulse loop starts when the card is on screen (diagrams.md: it runs only on screen); nothing is hidden at rest"
+ },
+ {
+  "check": "cut-text",
+  "target": "span.dg-cap__l",
+  "reason": "the kit diagram sets each label under its tile, wider than the tile by design (diagram.css .dg-cap); the words are whole and readable"
+ },
+ {
+  "check": "row-lines",
+  "target": "div.mo-mq > div.mo-mq__rail",
+  "reason": "the dealt marquee-row moment: a row of words that moves sideways by design (moments.md), with its pause button"
+ },
+ {
+  "check": "bleed-one-side",
+  "target": "#code ul.mo-mq__track \"",
+  "reason": "the marquee-row moment's moving track, clipped by its own rail inside the .wrap (moments.md); it is never seen past the right line"
+ },
+ {
+  "check": "bleed-one-side",
+  "target": "ul.mo-mq__track.mo-mq__clone",
+  "reason": "the marquee-row moment's clone track that makes the loop seamless, clipped by its rail inside the .wrap"
+ }
+]

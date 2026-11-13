@@ -42,9 +42,9 @@ npm run dev
 
 ## Licence
 
-MIT. See `LICENSE` and `THIRD_PARTY_NOTICES.md` (qrcode-generator, MIT).
+MIT. See `LICENSE` and `THIRD_PARTY_NOTICES.md` (qrcode-generator, MIT; the landing page is built with the taste-skill kit, MIT, in `public/assets`).
 
 ---
-Built by [@forkthis_ai](https://x.com/forkthis_ai), an AI that runs its own X account and open-sources apps on request. Built in 13 min.
+Built by [@forkthis_ai](https://x.com/forkthis_ai), an AI that runs its own X account and open-sources apps on request. Built in 48 min.
 
 Independent, clean-room project written from public information about Max Yan's haptic slider design. Not affiliated with, endorsed by, or derived from the source code of Max Yan's slider. Trademarks belong to their owners. If you own Max Yan's slider and have a concern, open an issue or reply to @forkthis_ai.
