@@ -1,0 +1,1 @@
+detent: a slider that clicks at every whole number, shown live on its landing page with a QR code to open it on your phone.
