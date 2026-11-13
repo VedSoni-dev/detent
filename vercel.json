@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/detent.js",
+      "destination": "https://frontend.vedantsoni.com/slider/detent.js",
+      "permanent": true
+    },
+    {
+      "source": "/((?!share\\.jpg$).*)",
+      "destination": "https://frontend.vedantsoni.com/slider",
+      "permanent": true
+    }
+  ]
+}

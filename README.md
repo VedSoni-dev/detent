@@ -1,5 +1,7 @@
 # detent
 
+> **Live at [frontend.vedantsoni.com/slider](https://frontend.vedantsoni.com/slider)**, one piece of [fork this frontend](https://github.com/VedSoni-dev/frontend): every fork this front-end build on one site, free with a publik account. This repo keeps the original standalone version.
+
 ![detent: a slider you feel click at every number, then paste into your app](docs/media/cover.png)
 
 A slider you can feel: it clicks at every whole number on your phone, then you copy the same slider into your own web app. A free, open-source remake of a haptic slider design by [Max Yan](https://x.com/MlXZY88/status/2120973389498098103).
@@ -15,7 +17,7 @@ A slider you can feel: it clicks at every whole number on your phone, then you c
 
 These are the real app at `/app`, with a sample slider ("How spicy was dinner?") typed in for the screenshots.
 
-**publik:** coming soon (the listing is on the way) · **Live:** https://detent-beta.vercel.app · **App:** https://detent-beta.vercel.app/app
+**publik:** coming soon (the listing is on the way) · **Live:** https://frontend.vedantsoni.com/slider · **App:** https://frontend.vedantsoni.com/slider
 
 ## What works
 - A slider engine in one file (`lib/detent.js`, no dependencies, no network): Pointer Events with capture, tap anywhere on the track to jump, 0.1 steps with a detent (click) at every whole number, once each way, never doubled on a wiggle, one click for a fast fling.
@@ -36,7 +38,7 @@ These are the real app at `/app`, with a sample slider ("How spicy was dinner?")
 ## Use it in your own page
 
 ```html
-<script src="https://detent-beta.vercel.app/detent.js" defer></script>
+<script src="https://frontend.vedantsoni.com/slider/detent.js" defer></script>
 <div data-detent data-label="How was it?" data-min="0" data-max="10" data-step="0.1" data-value="7"></div>
 <script>document.addEventListener("detent:change", (e) => console.log(e.detail.value));</script>
 ```
