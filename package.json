@@ -1,6 +1,6 @@
 {
   "name": "detent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "A slider you can feel: it clicks at every whole number on your phone. Tune it, then copy it into your own web app.",
   "license": "MIT",

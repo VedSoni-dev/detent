@@ -17,7 +17,7 @@ A slider you can feel: it clicks at every whole number on your phone, then you c
 
 These are the real app at `/app`, with a sample slider ("How spicy was dinner?") typed in for the screenshots.
 
-**publik:** coming soon (the listing is on the way) · **Live:** https://frontend.vedantsoni.com/slider · **App:** https://frontend.vedantsoni.com/slider
+**publik:** Sign in with publik on the live site (free with a publik account) · **Live:** https://frontend.vedantsoni.com/slider · **App:** https://frontend.vedantsoni.com/slider
 
 ## What works
 - A slider engine in one file (`lib/detent.js`, no dependencies, no network): Pointer Events with capture, tap anywhere on the track to jump, 0.1 steps with a detent (click) at every whole number, once each way, never doubled on a wiggle, one click for a fast fling.
